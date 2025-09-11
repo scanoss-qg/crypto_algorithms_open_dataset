@@ -14,7 +14,7 @@ This data set, which includes a list of cryptography algorithms with an open sou
 
 The [Taxonomy](/taxonomy) Is a link to SPDX cryptographic algorithms definitions. 
 
-You can find the index of the cryptography algorithms and their corresponding algorithId in the [algorithms](/algorithms) folder. If you want to contribute definining a new algorithm you should do [there](https://github.com/spdx/crypto-algorithms) and not in this project.
+You can find the index of the cryptography algorithms and their corresponding algorithId in the [algorithms](/detection) folder. If you want to contribute definining a new algorithm you should do [there](https://github.com/spdx/crypto-algorithms) and not in this project.
 Also, you can take a look on the current supported [algorithms](algorithms.md)
 
 #### Detection
