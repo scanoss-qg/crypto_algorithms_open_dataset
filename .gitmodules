@@ -1,0 +1,5 @@
+[submodule "taxonomy"]
+    path = taxonomy
+    url = https://github.com/spdx/crypto-algorithms.git
+    branch = main
+	
