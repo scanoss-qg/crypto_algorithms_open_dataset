@@ -9,13 +9,6 @@ SPDX-License-Identifier: CC0-1.0
 
 This data set, which includes a list of cryptography algorithms with an open source implementation, was originally the output of SCANOSS mining efforts across its entire data base, which includes all relevant open source software published. Today, the intention is to turn this repository into a collaborative project to enrich and maintain this data set, not just for export control, the original target activity, but for other purposes as well, like quantum safe or compliance with a variety of regulations.
 
-## Folder Structure
-There are two main folders in this repo and several subfolders:
-* [definitions_crypto_algorithms](definitions_crypto_algorithms)
-    * [list_definitions_crypto_algorithms](definitions_crypto_algorithms/list_definitions_crypto_algorithms)
-    * [spec_crypto_algorithms](definitions_crypto_algorithms/spec_crypto_algorithms)
-* [utilities](utilities)
-* [docs_crypto_algorithms](docs_crypto_algorithms)
 
 ### SPDX Crypto algorithms definitions
 
