@@ -17,19 +17,16 @@ There are two main folders in this repo and several subfolders:
 * [utilities](utilities)
 * [docs_crypto_algorithms](docs_crypto_algorithms)
 
-### Definitions_crypto_algorithms
+### SPDX Crypto algorithms definitions
 
-The [definitions_crypto_algorithms](definitions_crypto_algorithms) folder contains the current definitions list together the information to create new ones or enrich the existing ones
+The [Taxonomy](taxonomy) Is a link to SPDX cryptographic algorithms definitions. 
 
-You can find the index of the cryptography algorithms and their corresponding algorithId in the [definition_index_crypto_algorithms.md](/definitions_crypto_algorithms/definitions_index_crypto_algorithms.md) fine. This is the best place to start.
+You can find the index of the cryptography algorithms and their corresponding algorithId in the [algorithms.md](/algorithms) fine. If you want to contribute definining a new algorithm you should do [there](https://github.com/spdx/crypto-algorithms) and not in this project.
 
-#### list_definitions_crypto_algorithms
+#### Detection
 
-The [list_definitions_crypto_algorithms](definitions_crypto_algorithms folder contains a set of YAML files which define all the available cryptography algorithms to be used when searching for hints inside source files.
+The [detection](ddetection) folder contains a set of YAML files which define all the available cryptography algorithms. Every file contains the keywords used for detection of that algorithm inside source files.
 
-#### spec_crypto_algorithms
-
-The [spec_crypto_algorithms](definitions_crypto_algorithms/spec_crypto_algorithms) contains the information to create new definitions, or to enrich the existing ones, as well as a description of the syntax followed on each definition. If you want to understand the syntaxt of each one of the definitions, this is the place to go.
 
 ### Utilities
 
@@ -38,9 +35,6 @@ The [utilities](utilities) folder contains some helper utility scripts written i
 The primary example is [crypto_detect.py](utilities/crypto_detect.py).
 More details on how to use it can be found [here](utilities/README.md)
 
-### docs_crypto_algorithms
-
-The [docs_crypto_algorithms](docs_crypto_algorithms) folder contains documents that are relevant for maintainers, contributors and users, related to the project and its releases.
 
 ## Contributing New Cryptographic Data
 
@@ -48,6 +42,10 @@ If you find a missing/invalid keyword, please do the following:
 - Fork the [repo](https://github.com/scanoss/crypto_algorithms_open_dataset)
 - Update or Add the affected YAML files inside the [definitions](definitions_crypto_algorithms) folder
 - Create a Pull Request with the details of the update
+
+If you want to define a missing algorithm:
+- Contribute to [SPDX](https://github.com/spdx/crypto-algorithms.git) crypto definitions first, we will add an initial set of keywords once your PR has been merged.
+- Enrich the new algorithm adding keywords
 
 The team will review these requests and accept them into repo for everyone to benefit from.
 
