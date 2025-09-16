@@ -1,0 +1,78 @@
+name: Sync SPDX taxonomy
+
+on:
+  # Se ejecuta cuando se actualiza el puntero del submódulo 'taxonomy'
+  push:
+    paths:
+      - 'taxonomy'   # solo cuando cambia el commit del submódulo
+  # Permite ejecución manual desde la pestaña Actions
+  workflow_dispatch:
+
+jobs:
+  generate-keywords:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repo (incluye submódulos)
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0   # necesario para comparar commits
+
+      - name: Identify previous and current submodule commits
+        id: find_shas
+        run: |
+          # Commit actual del submódulo
+          CURR_SHA=$(git rev-parse HEAD:taxonomy)
+          echo "curr=$CURR_SHA" >> $GITHUB_OUTPUT
+
+          # Commit anterior del submódulo en main
+          PREV_SHA=$(git log -1 --pretty=format:%P -- taxonomy | cut -d' ' -f1)
+          echo "prev=$PREV_SHA" >> $GITHUB_OUTPUT
+
+      - name: Fetch taxonomy history
+        run: |
+          git -C taxonomy fetch --quiet origin '+refs/heads/*:refs/remotes/origin/*'
+
+      - name: Find new YAML files in submodule
+        id: diff_files
+        run: |
+          PREV="${{ steps.find_shas.outputs.prev }}"
+          CURR="${{ steps.find_shas.outputs.curr }}"
+          if [ -z "$PREV" ]; then
+            # Si es la primera vez que se agrega el submódulo, todos los YAML son "nuevos"
+            git -C taxonomy ls-files '*.yaml' > new_files.txt
+          else
+            git -C taxonomy diff --name-only --diff-filter=A $PREV $CURR -- '*.yaml' > new_files.txt
+          fi
+          cat new_files.txt
+
+      - name: Create keyword definition files
+        if: ${{ always() }}
+        run: |
+          mkdir -p detection/rules
+          while read -r file; do
+            [ -z "$file" ] && continue
+            echo "Processing $file"
+            ID=$(yq '.id' "taxonomy/$file")
+            if [ -n "$ID" ] && [ ! -f "detection/rules/${ID}.yaml" ]; then
+              cat > "detection/rules/${ID}.yaml" <<EOF
+          id: $ID
+          keywords:
+            - $ID
+          EOF
+                        echo "Created detection/rules/${ID}.yaml"
+                      fi
+                    done < new_files.txt
+
+      - name: Commit and create Pull Request
+        uses: peter-evans/create-pull-request@v5
+        with:
+          commit-message: "Add keyword definitions for new SPDX algorithms"
+          branch: spdx-sync/${{ github.run_id }}
+          title: "Add keyword definitions for new SPDX algorithms"
+          body: "Automatically generated keyword definition files for new algorithms detected in SPDX taxonomy submodule."
+          labels: "automation,spdx-sync"
