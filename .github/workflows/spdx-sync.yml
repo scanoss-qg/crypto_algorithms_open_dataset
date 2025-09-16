@@ -1,11 +1,9 @@
 name: Sync SPDX taxonomy
 
 on:
-  # Se ejecuta cuando se actualiza el puntero del submódulo 'taxonomy'
   push:
     paths:
-      - 'taxonomy'   # solo cuando cambia el commit del submódulo
-  # Permite ejecución manual desde la pestaña Actions
+      - 'taxonomy'   # se dispara cuando cambia el puntero del submódulo
   workflow_dispatch:
 
 jobs:
@@ -16,13 +14,13 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout repo (incluye submódulos)
+      - name: Checkout repo
         uses: actions/checkout@v4
         with:
           submodules: true
-          fetch-depth: 0   # necesario para comparar commits
+          fetch-depth: 0
 
-      - name: Identify previous and current submodule commits
+      - name: Identify commits
         id: find_shas
         run: |
           CURR_SHA=$(git rev-parse HEAD:taxonomy)
@@ -30,39 +28,46 @@ jobs:
           PREV_SHA=$(git log -1 --pretty=format:%P -- taxonomy | cut -d' ' -f1)
           echo "prev=$PREV_SHA" >> $GITHUB_OUTPUT
 
-      - name: Fetch full taxonomy history
+      - name: Get submodule URL
+        id: sub_url
         run: |
-          git -C taxonomy fetch --all --tags --prune
-          git -C taxonomy checkout ${{ steps.find_shas.outputs.curr }}
+          URL=$(git config -f .gitmodules --get submodule.taxonomy.url)
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
-      - name: Find new YAML files in submodule
+      - name: Clone full taxonomy repo
+        run: |
+          git clone --quiet --no-tags --progress ${{ steps.sub_url.outputs.url }} full-taxonomy
+
+      - name: Find new YAML files
         run: |
           PREV="${{ steps.find_shas.outputs.prev }}"
           CURR="${{ steps.find_shas.outputs.curr }}"
+          cd full-taxonomy
           if [ -z "$PREV" ]; then
-            git -C taxonomy ls-files '*.yaml' > new_files.txt
+            git ls-files '*.yaml' > ../new_files.txt
           else
-            git -C taxonomy diff --name-only --diff-filter=A $PREV $CURR -- '*.yaml' > new_files.txt
+            git fetch --all --quiet
+            git diff --name-only --diff-filter=A $PREV $CURR -- '*.yaml' > ../new_files.txt
           fi
+          cd ..
           cat new_files.txt
 
       - name: Create keyword definition files
-        if: ${{ always() }}
         run: |
           mkdir -p detection/rules
           while read -r file; do
             [ -z "$file" ] && continue
             echo "Processing $file"
-            ID=$(yq '.id' "taxonomy/$file")
+            ID=$(yq '.id' "full-taxonomy/$file")
             if [ -n "$ID" ] && [ ! -f "detection/rules/${ID}.yaml" ]; then
               cat > "detection/rules/${ID}.yaml" <<EOF
-          id: $ID
-          keywords:
-            - $ID
-          EOF
-                        echo "Created detection/rules/${ID}.yaml"
-                      fi
-                    done < new_files.txt
+            id: $ID
+            keywords:
+              - $ID
+            EOF
+                      echo "Created detection/rules/${ID}.yaml"
+                    fi
+                  done < new_files.txt
 
       - name: Commit and create Pull Request
         uses: peter-evans/create-pull-request@v5
