@@ -3,7 +3,7 @@ name: Sync SPDX taxonomy
 on:
   push:
     paths:
-      - 'taxonomy'   # se dispara cuando cambia el puntero del submódulo
+      - 'taxonomy'
   workflow_dispatch:
 
 jobs:
@@ -14,60 +14,62 @@ jobs:
       pull-requests: write
 
     steps:
-      - name: Checkout repo
+      - name: Checkout parent repo
         uses: actions/checkout@v4
         with:
           submodules: true
           fetch-depth: 0
 
-      - name: Identify commits
-        id: find_shas
+      - name: Get submodule URL and SHAs
+        id: info
         run: |
-          CURR_SHA=$(git rev-parse HEAD:taxonomy)
-          echo "curr=$CURR_SHA" >> $GITHUB_OUTPUT
-          PREV_SHA=$(git log -1 --pretty=format:%P -- taxonomy | cut -d' ' -f1)
-          echo "prev=$PREV_SHA" >> $GITHUB_OUTPUT
+          echo "curr=$(git rev-parse HEAD:taxonomy)" >> $GITHUB_OUTPUT
+          echo "prev=$(git log -1 --pretty=format:%P -- taxonomy | cut -d' ' -f1)" >> $GITHUB_OUTPUT
+          echo "url=$(git config -f .gitmodules --get submodule.taxonomy.url)" >> $GITHUB_OUTPUT
 
-      - name: Get submodule URL
-        id: sub_url
+      - name: Clone current taxonomy
         run: |
-          URL=$(git config -f .gitmodules --get submodule.taxonomy.url)
-          echo "url=$URL" >> $GITHUB_OUTPUT
+          git clone --quiet ${{ steps.info.outputs.url }} taxonomy-curr
+          cd taxonomy-curr
+          git checkout ${{ steps.info.outputs.curr }}
 
-      - name: Clone full taxonomy repo
+      - name: Clone previous taxonomy (best-effort)
+        continue-on-error: true
         run: |
-          git clone --quiet --no-tags --progress ${{ steps.sub_url.outputs.url }} full-taxonomy
-
-      - name: Find new YAML files
-        run: |
-          PREV="${{ steps.find_shas.outputs.prev }}"
-          CURR="${{ steps.find_shas.outputs.curr }}"
-          cd full-taxonomy
-          if [ -z "$PREV" ]; then
-            git ls-files '*.yaml' > ../new_files.txt
-          else
-            git fetch --all --quiet
-            git diff --name-only --diff-filter=A $PREV $CURR -- '*.yaml' > ../new_files.txt
+          if [ -n "${{ steps.info.outputs.prev }}" ]; then
+            git clone --quiet ${{ steps.info.outputs.url }} taxonomy-prev
+            cd taxonomy-prev
+            git checkout ${{ steps.info.outputs.prev }} || echo "Prev commit not reachable"
           fi
-          cd ..
+
+      - name: Determine new YAML files
+        run: |
+          mkdir -p detection/rules
+          touch new_files.txt
+          if [ -d taxonomy-prev/.git ]; then
+            diff -qr taxonomy-prev taxonomy-curr | \
+              grep "^Only in taxonomy-curr" | grep ".yaml" | \
+              sed 's|.*taxonomy-curr/||' > new_files.txt || true
+          else
+            # Si no hay versión previa alcanzable, todos los YAML son "nuevos"
+            find taxonomy-curr -name '*.yaml' > new_files.txt
+          fi
           cat new_files.txt
 
       - name: Create keyword definition files
         run: |
-          mkdir -p detection/rules
           while read -r file; do
             [ -z "$file" ] && continue
-            echo "Processing $file"
-            ID=$(yq '.id' "full-taxonomy/$file")
+            ID=$(yq '.id' "taxonomy-curr/$file")
             if [ -n "$ID" ] && [ ! -f "detection/rules/${ID}.yaml" ]; then
               cat > "detection/rules/${ID}.yaml" <<EOF
-            id: $ID
-            keywords:
-              - $ID
-            EOF
-                      echo "Created detection/rules/${ID}.yaml"
-                    fi
-                  done < new_files.txt
+          id: $ID
+          keywords:
+            - $ID
+          EOF
+                        echo "Created detection/rules/${ID}.yaml"
+                      fi
+                    done < new_files.txt
 
       - name: Commit and create Pull Request
         uses: peter-evans/create-pull-request@v5
