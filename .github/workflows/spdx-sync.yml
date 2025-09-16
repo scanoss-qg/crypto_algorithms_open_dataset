@@ -52,7 +52,7 @@ jobs:
               sed 's|.*taxonomy-curr/||' > new_files.txt || true
           else
             # Si no hay versión previa alcanzable, todos los YAML son "nuevos"
-            find taxonomy-curr -name '*.yaml' > new_files.txt
+            find taxonomy-curr -name '*.yaml' -printf '%P\n' > new_files.txt
           fi
           cat new_files.txt
 
@@ -70,6 +70,10 @@ jobs:
                         echo "Created detection/rules/${ID}.yaml"
                       fi
                     done < new_files.txt
+
+      - name: Cleanup temp folders
+        run: |
+          rm -rf taxonomy-curr taxonomy-prev new_files.txt
 
       - name: Commit and create Pull Request
         uses: peter-evans/create-pull-request@v5
