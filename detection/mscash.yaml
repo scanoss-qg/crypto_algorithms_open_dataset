@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: mscash
+id: mscash
 keywords:
-    - mscash.
-    - mscash_
-    - mscash.x.gz
+- mscash

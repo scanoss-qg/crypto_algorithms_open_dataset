@@ -1,18 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: ntruencrypt
+id: ntruencrypt
 keywords:
-    - ntru_
-    - ntru.h
-    - ntrudec
-    - ntruenc
-    - decryptntru
-    - encryptntru
-    - decryptwithntru
-    - encryptwithntru
-    - generatentrukeys
-    - net.sf.ntru.util
-    - generatentrukeypair
-    - generatentrukeypair
-    - ntrugeneratekeypair
-    - ntrugeneratekeypair
-    - ntruprime_gen_key_pair
+- ntruencrypt

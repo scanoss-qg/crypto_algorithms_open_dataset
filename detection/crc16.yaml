@@ -1,8 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: crc16
+id: crc16
 keywords:
-    - crc16_
-    - 'crc_16 '
-    - crc_16_
-    - crc_16ccitt
-    - crc_16xmodem
+- crc16

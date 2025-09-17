@@ -1,13 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: xtr
+id: xtr
 keywords:
-    - libxtr
-    - xtrlib
-    - xtrcrypt
-    - xtr_curve
-    - xtr_order
-    - xtr_prime
-    - xtr_modulus
-    - cryptopp_xtr_h
-    - xtr_exponentiate
-    - xtr_findprimesandgenerator
+- xtr

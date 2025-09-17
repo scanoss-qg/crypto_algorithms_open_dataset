@@ -1,7 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: shark
+id: shark
 keywords:
-    - shark.h
-    - voipshark
-    - sharktransform
-    - cryptopp_shark_h
+- shark

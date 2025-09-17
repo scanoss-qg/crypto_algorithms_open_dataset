@@ -1,13 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: pkcs7
+id: pkcs7
 keywords:
-    - pkcs7_
-    - pkcs7data
-    - pkcs7padding
-    - pkcs7signature
-    - pkcs7data_final
-    - pkcs7contentinfo
-    - pkcs7contenttype
-    - smime_write_pkcs7
-    - smime_write_asn1_ex
-    - ossl_x509_add_cert_new
+- pkcs7

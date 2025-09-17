@@ -1,14 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: mdc2
+id: mdc2
 keywords:
-    - mdc2
-    - ::md2
-    - mdc2.h
-    - mdc2.new
-    - mdc2_body
-    - mdc2_init
-    - mdc2_final
-    - mdc2_update
-    - mdc2_with_aes.py
-    - getinstance("mdc2")
-    - crypto.createhash('mdc2')
+- mdc2

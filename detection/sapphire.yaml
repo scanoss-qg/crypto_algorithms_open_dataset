@@ -1,7 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: sapphire
+id: sapphire
 keywords:
-    - sapphire.h
-    - sapphire::keyrand
-    - sapphire::init_hash
-    - sapphire::initialize
+- sapphire

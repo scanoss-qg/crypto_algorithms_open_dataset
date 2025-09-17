@@ -1,6 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: ssha
+id: ssha
 keywords:
-    - ssha_
-    - checkssha
-    - ssha224password
+- ssha

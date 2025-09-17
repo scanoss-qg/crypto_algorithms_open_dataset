@@ -1,10 +1,3 @@
-# SPDX-License-Identifier: CC0-1.0
-algorithmId: feal
+id: feal
 keywords:
-    - feal_sbox
-    - feal_rounds
-    - createlmhash
-    - feal_key_size
-    - lmhashconstant
-    - feal_block_size
-    - unknownlmhashes
+- feal
