@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: blake3
+id: blake3
 keywords:
     - /blake3
     - blake3(

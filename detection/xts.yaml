@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: xts
+id: xts
 keywords:
     - xts.h>
     - 128_xts

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: sike
+id: sike
 keywords:
     - sike.h
     - sike_p

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: kdfdoublepipeline
+id: kdfdoublepipeline
 keywords:
     - KDFDoublePipeline
     - Double Pipeline KDF

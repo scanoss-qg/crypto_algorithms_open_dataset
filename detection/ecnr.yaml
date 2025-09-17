@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: ecnr
+id: ecnr
 keywords:
     - Elliptic Curve Nyberg-Rueppel
     - ECNRSigner

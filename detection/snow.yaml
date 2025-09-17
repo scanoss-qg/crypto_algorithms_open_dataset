@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: snow
+id: snow
 keywords:
     - snow_3g
     - snow-3g.h

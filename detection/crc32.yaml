@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: crc32
+id: crc32
 keywords:
     - crc32_
     - xcrc32

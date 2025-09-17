@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: ntruencrypt
+id: ntruencrypt
 keywords:
     - ntru_
     - ntru.h

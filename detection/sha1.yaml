@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: sha1
+id: sha1
 keywords:
     - sha1_
     - sha1.h

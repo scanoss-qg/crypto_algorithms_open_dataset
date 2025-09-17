@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: hc256
+id: hc256
 keywords:
     - hc256_crypt
     - hc256_setkey

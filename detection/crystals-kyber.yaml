@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: crystals-kyber
+id: crystals-kyber
 keywords:
     - kyber.h
     - kyber512

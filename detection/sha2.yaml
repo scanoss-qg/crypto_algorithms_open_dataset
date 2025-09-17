@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: sha2
+id: sha2
 keywords:
     - sha-2
     - sha224

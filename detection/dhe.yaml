@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: dhe
+id: dhe
 keywords:
     - dh_get0_
     - dh_meth_

@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: pbes1
+id: pbes1
 keywords:
     - getpbes1kdf
     - getpbes1hash

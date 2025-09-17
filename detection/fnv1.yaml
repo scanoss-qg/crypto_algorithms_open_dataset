@@ -1,5 +1,5 @@
 # SPDX-License-Identifier: CC0-1.0
-algorithmId: fnv1
+id: fnv1
 keywords:
     - fnv1_32
     - fnv1_64
