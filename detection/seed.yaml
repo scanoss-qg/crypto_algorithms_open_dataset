@@ -1,8 +1,0 @@
-# SPDX-License-Identifier: CC0-1.0
-id: seed
-keywords:
-    - seed.go
-    - seed_setkey
-    - seed_decrypt
-    - seed_encrypt
-    - seed128cipher
