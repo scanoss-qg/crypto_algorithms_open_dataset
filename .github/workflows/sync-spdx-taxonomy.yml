@@ -1,0 +1,162 @@
+name: Sync SPDX Taxonomy
+
+on:
+  schedule:
+    - cron: '0 0 * * *'  # Daily at midnight UTC
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'taxonomy/**'
+
+jobs:
+  sync-taxonomy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+          fetch-depth: 0
+
+      - name: Update taxonomy submodule
+        run: |
+          git submodule update --remote taxonomy
+          echo "TAXONOMY_UPDATED=$(git status --porcelain taxonomy | wc -l)" >> $GITHUB_ENV
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+
+      - name: Sync detection files with taxonomy
+        run: |
+          python3 << 'EOF'
+          import yaml
+          import os
+          import glob
+          from pathlib import Path
+
+          def load_yaml(file_path):
+              try:
+                  with open(file_path, 'r') as f:
+                      return yaml.safe_load(f)
+              except:
+                  return None
+
+          def save_yaml(file_path, data):
+              with open(file_path, 'w') as f:
+                  yaml.dump(data, f, default_flow_style=False, sort_keys=False)
+
+          # Get all algorithm IDs from taxonomy
+          taxonomy_dir = 'taxonomy'
+          detection_dir = 'detection'
+
+          taxonomy_algorithms = {}
+          for yaml_file in glob.glob(f'{taxonomy_dir}/**/*.yaml', recursive=True):
+              data = load_yaml(yaml_file)
+              if data and 'id' in data:
+                  taxonomy_algorithms[data['id']] = {
+                      'name': data.get('name', ''),
+                      'category': data.get('category', ''),
+                      'file': yaml_file
+                  }
+
+          # Get all existing detection files
+          existing_detections = {}
+          for yaml_file in glob.glob(f'{detection_dir}/*.yaml'):
+              data = load_yaml(yaml_file)
+              if data and 'id' in data:
+                  existing_detections[data['id']] = yaml_file
+
+          changes = []
+
+          # Find new algorithms to add
+          for algo_id, algo_info in taxonomy_algorithms.items():
+              if algo_id not in existing_detections:
+                  # Create new detection file
+                  detection_file = f'{detection_dir}/{algo_id}.yaml'
+                  detection_data = {
+                      'id': algo_id,
+                      'keywords': [algo_id]
+                  }
+                  save_yaml(detection_file, detection_data)
+                  changes.append(f'Added: {algo_id}')
+                  print(f'Created detection file: {detection_file}')
+
+          # Find algorithms to remove
+          for algo_id, detection_file in existing_detections.items():
+              if algo_id not in taxonomy_algorithms:
+                  os.remove(detection_file)
+                  changes.append(f'Removed: {algo_id}')
+                  print(f'Removed detection file: {detection_file}')
+
+          # Check for renamed algorithms (same content, different ID)
+          # This is a simplified check - in production you might want more sophisticated matching
+          for old_id, old_file in existing_detections.items():
+              if old_id not in taxonomy_algorithms:
+                  # Try to find if this was renamed
+                  old_data = load_yaml(old_file)
+                  if old_data:
+                      # For now, we just remove old and add new will be handled above
+                      # In a more sophisticated system, we could track renames via git history
+                      pass
+
+          # Save change summary
+          if changes:
+              with open('sync_changes.txt', 'w') as f:
+                  f.write('\n'.join(changes))
+              print(f'\nTotal changes: {len(changes)}')
+          else:
+              print('No changes detected')
+          EOF
+
+      - name: Check for changes
+        id: check_changes
+        run: |
+          if [ -n "$(git status --porcelain detection/)" ]; then
+            echo "changes=true" >> $GITHUB_OUTPUT
+            echo "Changes detected in detection directory"
+          else
+            echo "changes=false" >> $GITHUB_OUTPUT
+            echo "No changes detected"
+          fi
+
+      - name: Create Pull Request
+        if: steps.check_changes.outputs.changes == 'true'
+        uses: peter-evans/create-pull-request@v5
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          commit-message: |
+            chore: sync detection files with SPDX taxonomy
+
+            Automated synchronization of detection files based on SPDX taxonomy changes.
+          branch: sync/spdx-taxonomy-${{ github.run_number }}
+          delete-branch: true
+          title: 'Sync: Update detection files from SPDX taxonomy'
+          body: |
+            ## Automated SPDX Taxonomy Sync
+
+            This PR synchronizes the detection files with the latest SPDX taxonomy.
+
+            ### Changes
+            ${{ steps.check_changes.outputs.changes == 'true' && '✅ Detection files updated' || '❌ No changes detected' }}
+
+            ### Details
+            - Workflow run: #${{ github.run_number }}
+            - Triggered by: ${{ github.event_name }}
+
+            Please review the changes and merge if everything looks correct.
+          labels: |
+            automated
+            spdx-sync
+            detection
