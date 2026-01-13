@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: CC0-1.0
-id: ed25519
-keywords:
-    - x25519
-    - ed25519
-    - edeckey
-    - eddsaengine
-    - eddsaparameterspec
-    - net.i2p.crypto.eddsa
