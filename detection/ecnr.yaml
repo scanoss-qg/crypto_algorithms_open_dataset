@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: CC0-1.0
-id: ecnr
-keywords:
-    - Elliptic Curve Nyberg-Rueppel
-    - ECNRSigner
-    - ECNR_sign
-    - ECNR_verify
-    - ECNRDigestSigner
-    - ECNRKeyPairGenerator
