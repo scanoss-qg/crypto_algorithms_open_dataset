@@ -1,9 +1,0 @@
-# SPDX-License-Identifier: CC0-1.0
-id: sha2
-keywords:
-    - sha-2
-    - sha224
-    - sha256
-    - sha384
-    - sha512
-    - digest/sha2
